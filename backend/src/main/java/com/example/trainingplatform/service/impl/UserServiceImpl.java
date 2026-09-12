@@ -1,11 +1,13 @@
 package com.example.trainingplatform.service.impl;
 
+import com.example.trainingplatform.dto.request.UserCreateRequest;
 import com.example.trainingplatform.dto.request.UserUpdateRequest;
 import com.example.trainingplatform.dto.response.DashboardStatsResponse;
 import com.example.trainingplatform.dto.response.UserResponse;
 import com.example.trainingplatform.entity.FormationStatus;
 import com.example.trainingplatform.entity.Role;
 import com.example.trainingplatform.entity.User;
+import com.example.trainingplatform.exception.EmailAlreadyExistsException;
 import com.example.trainingplatform.exception.ResourceNotFoundException;
 import com.example.trainingplatform.repository.CategorieRepository;
 import com.example.trainingplatform.repository.FormationRepository;
@@ -14,6 +16,7 @@ import com.example.trainingplatform.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +28,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final FormationRepository formationRepository;
     private final CategorieRepository categorieRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional(readOnly = true)
@@ -37,6 +41,25 @@ public class UserServiceImpl implements UserService {
     public UserResponse getUserById(Long id) {
         User user = findUserById(id);
         return mapToResponse(user);
+    }
+
+    @Override
+    public UserResponse createUser(UserCreateRequest request) {
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new EmailAlreadyExistsException(request.getEmail());
+        }
+
+        User user = User.builder()
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
+                .email(request.getEmail())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .role(request.getRole() != null ? request.getRole() : Role.LEARNER)
+                .phone(request.getPhone())
+                .enabled(request.getEnabled() != null ? request.getEnabled() : true)
+                .build();
+
+        return mapToResponse(userRepository.save(user));
     }
 
     @Override

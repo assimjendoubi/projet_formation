@@ -83,7 +83,7 @@ type ModalMode = 'createFormation' | 'editFormation' | 'createCategory' | 'editC
                           <td><span class="badge badge-primary">{{ f.category?.name }}</span></td>
                           <td><span class="badge badge-{{ getLevelBadge(f.level) }}">{{ f.level }}</span></td>
                           <td><span class="badge badge-{{ getStatusBadge(f.status) }}">{{ f.status }}</span></td>
-                          <td class="font-semibold" style="color: var(--primary-light);">{{ f.price }}€</td>
+                          <td class="font-semibold" style="color: var(--primary-light);">{{ f.price }} TND</td>
                           <td>
                             <button class="btn btn-sm btn-secondary" (click)="openChapters(f)">📖 {{ f.chapitreCount }}</button>
                           </td>
@@ -163,7 +163,7 @@ type ModalMode = 'createFormation' | 'editFormation' | 'createCategory' | 'editC
             </div>
             <div class="grid-2">
               <div class="form-group">
-                <label>Prix (€)</label>
+                <label>Prix (TND)</label>
                 <input type="number" class="form-control" formControlName="price" min="0" step="0.01" />
               </div>
               <div class="form-group">

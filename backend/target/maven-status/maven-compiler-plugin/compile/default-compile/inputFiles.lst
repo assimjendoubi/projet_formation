@@ -9,6 +9,7 @@ C:\Users\Assim\Desktop\projet_ratt\backend\src\main\java\com\example\trainingpla
 C:\Users\Assim\Desktop\projet_ratt\backend\src\main\java\com\example\trainingplatform\entity\Competence.java
 C:\Users\Assim\Desktop\projet_ratt\backend\src\main\java\com\example\trainingplatform\security\JwtAuthFilter.java
 C:\Users\Assim\Desktop\projet_ratt\backend\src\main\java\com\example\trainingplatform\dto\request\ProfilRequest.java
+C:\Users\Assim\Desktop\projet_ratt\backend\src\main\java\com\example\trainingplatform\dto\request\UserCreateRequest.java
 C:\Users\Assim\Desktop\projet_ratt\backend\src\main\java\com\example\trainingplatform\entity\Role.java
 C:\Users\Assim\Desktop\projet_ratt\backend\src\main\java\com\example\trainingplatform\dto\response\ProfilResponse.java
 C:\Users\Assim\Desktop\projet_ratt\backend\src\main\java\com\example\trainingplatform\config\SecurityConfig.java

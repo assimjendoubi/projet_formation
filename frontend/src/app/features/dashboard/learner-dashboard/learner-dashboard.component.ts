@@ -141,7 +141,7 @@ import { User, Competence, Profil, Formation } from '../../../core/models/models
                     </div>
                     <div class="formation-card-footer">
                       <span class="formation-meta">⏱ {{ f.durationHours }}h · 📖 {{ f.chapitreCount }} chapitres</span>
-                      <span class="formation-price">{{ f.price }}€</span>
+                      <span class="formation-price">{{ f.price }} TND</span>
                     </div>
                   </a>
                 }

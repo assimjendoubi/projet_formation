@@ -22,6 +22,9 @@ import { User, Role } from '../../../core/models/models';
                 <h1>Gestion des <span class="gradient-text">Utilisateurs</span></h1>
                 <p>{{ totalElements }} utilisateurs enregistrés</p>
               </div>
+              <button class="btn btn-primary" (click)="openCreate()">
+                ➕ Ajouter un utilisateur
+              </button>
             </div>
           </div>
 
@@ -103,6 +106,90 @@ import { User, Role } from '../../../core/models/models';
       </div>
     </div>
 
+    <!-- Create Modal -->
+    @if (showCreateModal) {
+      <div class="modal-overlay" (click)="closeCreateModal()">
+        <div class="modal" (click)="$event.stopPropagation()">
+          <div class="modal-header">
+            <h3 class="modal-title">➕ Nouvel Utilisateur</h3>
+            <button class="modal-close" (click)="closeCreateModal()">✕</button>
+          </div>
+
+          @if (createError) {
+            <div class="alert alert-danger mb-4">{{ createError }}</div>
+          }
+
+          <form [formGroup]="createForm" (ngSubmit)="createUser()">
+            <div class="grid-2">
+              <div class="form-group">
+                <label>Prénom *</label>
+                <input type="text" class="form-control" formControlName="firstName" placeholder="Jean" />
+                @if (createForm.get('firstName')?.invalid && createForm.get('firstName')?.touched) {
+                  <span class="form-error">Prénom requis</span>
+                }
+              </div>
+              <div class="form-group">
+                <label>Nom *</label>
+                <input type="text" class="form-control" formControlName="lastName" placeholder="Dupont" />
+                @if (createForm.get('lastName')?.invalid && createForm.get('lastName')?.touched) {
+                  <span class="form-error">Nom requis</span>
+                }
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Adresse email *</label>
+              <input type="email" class="form-control" formControlName="email" placeholder="jean.dupont@example.com" />
+              @if (createForm.get('email')?.invalid && createForm.get('email')?.touched) {
+                <span class="form-error">Email valide requis</span>
+              }
+            </div>
+
+            <div class="form-group">
+              <label>Mot de passe *</label>
+              <input type="password" class="form-control" formControlName="password" placeholder="Minimum 6 caractères" />
+              @if (createForm.get('password')?.invalid && createForm.get('password')?.touched) {
+                <span class="form-error">Minimum 6 caractères requis</span>
+              }
+            </div>
+
+            <div class="form-group">
+              <label>Téléphone (optionnel)</label>
+              <input type="tel" class="form-control" formControlName="phone" placeholder="0612345678" />
+            </div>
+
+            <div class="grid-2">
+              <div class="form-group">
+                <label>Rôle</label>
+                <select class="form-control" formControlName="role">
+                  <option value="LEARNER">🎓 Apprenant</option>
+                  <option value="ADMIN">👑 Administrateur</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Statut du compte</label>
+                <select class="form-control" formControlName="enabled">
+                  <option [value]="true">✓ Actif</option>
+                  <option [value]="false">✗ Inactif</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="flex gap-2 mt-4">
+              <button type="submit" class="btn btn-primary" [disabled]="saving">
+                @if (saving) {
+                  Création...
+                } @else {
+                  🚀 Créer l'utilisateur
+                }
+              </button>
+              <button type="button" class="btn btn-secondary" (click)="closeCreateModal()">Annuler</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    }
+
     <!-- Edit Modal -->
     @if (showEditModal) {
       <div class="modal-overlay" (click)="closeModal()">
@@ -126,22 +213,30 @@ import { User, Role } from '../../../core/models/models';
               <label>Téléphone</label>
               <input type="tel" class="form-control" formControlName="phone" />
             </div>
-            <div class="form-group">
-              <label>Rôle</label>
-              <select class="form-control" formControlName="role">
-                <option value="LEARNER">Apprenant</option>
-                <option value="ADMIN">Administrateur</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>Statut du compte</label>
-              <select class="form-control" formControlName="enabled">
-                <option [value]="true">Actif</option>
-                <option [value]="false">Inactif</option>
-              </select>
+            <div class="grid-2">
+              <div class="form-group">
+                <label>Rôle</label>
+                <select class="form-control" formControlName="role">
+                  <option value="LEARNER">🎓 Apprenant</option>
+                  <option value="ADMIN">👑 Administrateur</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Statut du compte</label>
+                <select class="form-control" formControlName="enabled">
+                  <option [value]="true">✓ Actif</option>
+                  <option [value]="false">✗ Inactif</option>
+                </select>
+              </div>
             </div>
             <div class="flex gap-2 mt-4">
-              <button type="submit" class="btn btn-primary" [disabled]="saving">{{ saving ? 'Sauvegarde...' : '💾 Sauvegarder' }}</button>
+              <button type="submit" class="btn btn-primary" [disabled]="saving">
+                @if (saving) {
+                  Sauvegarde...
+                } @else {
+                  💾 Sauvegarder
+                }
+              </button>
               <button type="button" class="btn btn-secondary" (click)="closeModal()">Annuler</button>
             </div>
           </form>
@@ -181,10 +276,13 @@ export class AdminUsersComponent implements OnInit {
   pageSize = 10;
   searchTerm = '';
 
+  showCreateModal = false;
   showEditModal = false;
   showDeleteModal = false;
   selectedUser: User | null = null;
+  createForm: FormGroup;
   editForm: FormGroup;
+  createError = '';
   saving = false;
   currentUserId: number | null = null;
 
@@ -193,6 +291,16 @@ export class AdminUsersComponent implements OnInit {
     private authService: AuthService,
     private fb: FormBuilder
   ) {
+    this.createForm = this.fb.group({
+      firstName: ['', Validators.required],
+      lastName: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      phone: [''],
+      role: ['LEARNER'],
+      enabled: [true]
+    });
+
     this.editForm = this.fb.group({
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
@@ -222,6 +330,54 @@ export class AdminUsersComponent implements OnInit {
       u.lastName.toLowerCase().includes(term) ||
       u.email.toLowerCase().includes(term)
     );
+  }
+
+  openCreate() {
+    this.createError = '';
+    this.createForm.reset({
+      firstName: '',
+      lastName: '',
+      email: '',
+      password: '',
+      phone: '',
+      role: 'LEARNER',
+      enabled: true
+    });
+    this.showCreateModal = true;
+  }
+
+  closeCreateModal() {
+    this.showCreateModal = false;
+    this.createError = '';
+  }
+
+  createUser() {
+    if (this.createForm.invalid) {
+      this.createForm.markAllAsTouched();
+      return;
+    }
+    this.saving = true;
+    this.createError = '';
+    this.userService.createUser(this.createForm.value).subscribe({
+      next: newUser => {
+        this.users.unshift(newUser);
+        this.totalElements++;
+        this.onSearch();
+        this.saving = false;
+        this.closeCreateModal();
+      },
+      error: err => {
+        this.saving = false;
+        if (err.error?.message) {
+          this.createError = err.error.message;
+        } else if (err.error && typeof err.error === 'object') {
+          const firstVal = Object.values(err.error)[0];
+          this.createError = typeof firstVal === 'string' ? firstVal : 'Erreur lors de la création';
+        } else {
+          this.createError = 'Erreur lors de la création de l\'utilisateur';
+        }
+      }
+    });
   }
 
   openEdit(user: User) { this.selectedUser = user; this.editForm.patchValue({ ...user }); this.showEditModal = true; }

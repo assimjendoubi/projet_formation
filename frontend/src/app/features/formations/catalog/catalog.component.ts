@@ -97,7 +97,7 @@ import { Formation, Category } from '../../../core/models/models';
                     </div>
                   </div>
                   <div class="formation-card-footer">
-                    <span class="formation-price">{{ f.price }}€</span>
+                    <span class="formation-price">{{ f.price }} TND</span>
                     <span class="btn btn-primary btn-sm">Voir →</span>
                   </div>
                 </a>

@@ -52,7 +52,7 @@ import { Formation, Chapitre } from '../../../core/models/models';
                 </div>
               </div>
               <div class="hero-price-card">
-                <div class="price">{{ formation.price }}€</div>
+                <div class="price">{{ formation.price }} TND</div>
                 <p class="text-muted text-sm">Accès complet à la formation</p>
               </div>
             </div>
